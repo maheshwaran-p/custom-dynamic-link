@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GroupKart - Shop Together, Save Together</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+            background: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        p {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 30px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-android {
+            background: #3DDC84;
+            color: white;
+        }
+        
+        .btn-ios {
+            background: #000;
+            color: white;
+        }
+        
+        .info {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        #status {
+            margin-top: 20px;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🛒</div>
+        <h1>Welcome to GroupKart!</h1>
+        <p id="mainText">Shop together effortlessly and get exclusive deals. Download the app to get started.</p>
+        
+        <div class="buttons">
+            <a href="https://play.google.com/store/apps/details?id=com.groupkart.store" 
+               id="androidBtn" 
+               class="btn btn-android">
+                📱 Download for Android
+            </a>
+            
+            <a href="https://apps.apple.com/us/app/groupkart/id6444329023" 
+               id="iosBtn" 
+               class="btn btn-ios">
+                🍎 Download for iOS
+            </a>
+        </div>
+        
+        <div class="info">
+            <div class="info-item">✓ Fresh Indian sweets & snacks</div>
+            <div class="info-item">✓ Delivered in 5-7 working days</div>
+            <div class="info-item">✓ Shop together & save more</div>
+        </div>
+        
+        <div id="status"></div>
+    </div>
+
+    <script>
+        // ====== CONFIGURATION ======
+        const CONFIG = {
+            androidScheme: 'groupkart://',
+            androidPackage: 'com.groupkart.store',
+            iosAppId: '6444329023',
+            playStoreUrl: 'https://play.google.com/store/apps/details?id=com.groupkart.store',
+            appStoreUrl: 'https://apps.apple.com/us/app/groupkart/id6444329023',
+            intentTimeout: 2500, // Time to wait for app to open
+        };
+
+        // ====== PLATFORM DETECTION ======
+        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        const isAndroid = /android/i.test(userAgent);
+        const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+        const isMobile = isAndroid || isIOS;
+
+        // ====== EXTRACT DEEP LINK DATA ======
+        const urlParams = new URLSearchParams(window.location.search);
+        const pathParts = window.location.pathname.split('/').filter(p => p);
+        
+        const deepLinkData = {
+            type: pathParts[0] || 'home', // refer, cart, product
+            referCode: urlParams.get('refer') || (pathParts[0] === 'refer' ? pathParts[1] : null),
+            productId: urlParams.get('id'),
+            cartId: urlParams.get('cart_id'),
+            invitedUserId: urlParams.get('invited_user_id'),
+            ownerName: urlParams.get('Owner_name'),
+            index: urlParams.get('index') || '0',
+            secPos: urlParams.get('secPos') || '0',
+            list: urlParams.get('list') || 'false',
+        };
+
+        console.log('🔗 Deep Link Data:', deepLinkData);
+
+        // ====== STORE DEEP LINK DATA ======
+        if (deepLinkData.referCode || deepLinkData.productId || deepLinkData.cartId) {
+            localStorage.setItem('groupkart_deeplink', JSON.stringify(deepLinkData));
+            localStorage.setItem('groupkart_deeplink_timestamp', Date.now().toString());
+            console.log('✅ Deep link data stored');
+        }
+
+        // ====== UPDATE UI BASED ON LINK TYPE ======
+        function updateUI() {
+            const mainText = document.getElementById('mainText');
+            
+            if (deepLinkData.referCode) {
+                mainText.innerHTML = `You've been invited to join GroupKart!<br><strong>Referral Code: ${deepLinkData.referCode}</strong><br>Download the app to get started with exclusive benefits.`;
+            } else if (deepLinkData.productId) {
+                mainText.innerHTML = `Check out this awesome product on GroupKart!<br>Download the app to view details and make a purchase.`;
+            } else if (deepLinkData.cartId) {
+                mainText.innerHTML = `You've been invited to join a shopping cart!<br><strong>By: ${deepLinkData.ownerName || 'Friend'}</strong><br>Download the app to collaborate and shop together.`;
+            }
+        }
+
+        // ====== BUILD INTENT URI ======
+        function buildIntentUri() {
+            let intentData = '';
+            
+            if (deepLinkData.referCode) {
+                intentData = `refer?code=${deepLinkData.referCode}`;
+            } else if (deepLinkData.productId) {
+                intentData = `product?id=${deepLinkData.productId}&index=${deepLinkData.index}&secPos=${deepLinkData.secPos}&list=${deepLinkData.list}`;
+            } else if (deepLinkData.cartId) {
+                intentData = `cart?cart_id=${deepLinkData.cartId}&invited_user_id=${deepLinkData.invitedUserId}&Owner_name=${encodeURIComponent(deepLinkData.ownerName || '')}`;
+            }
+            
+            return `${CONFIG.androidScheme}${intentData}`;
+        }
+
+        // ====== TRY TO OPEN APP (ANDROID) ======
+        function tryOpenAndroidApp() {
+            const status = document.getElementById('status');
+            status.innerHTML = 'Opening GroupKart app<span class="spinner"></span>';
+            
+            const intentUri = buildIntentUri();
+            console.log('🚀 Trying to open app with:', intentUri);
+            
+            // Create hidden iframe to trigger app
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = intentUri;
+            document.body.appendChild(iframe);
+            
+            // Set timeout to redirect to Play Store if app doesn't open
+            const timeout = setTimeout(() => {
+                console.log('⏰ App not opened, redirecting to Play Store');
+                status.innerHTML = 'Redirecting to Play Store<span class="spinner"></span>';
+                window.location.href = CONFIG.playStoreUrl;
+            }, CONFIG.intentTimeout);
+            
+            // Clean up
+            setTimeout(() => {
+                document.body.removeChild(iframe);
+                clearTimeout(timeout);
+            }, CONFIG.intentTimeout + 500);
+            
+            // If user comes back to page, app didn't open
+            window.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    clearTimeout(timeout);
+                    console.log('✅ App opened successfully');
+                }
+            });
+        }
+
+        // ====== TRY TO OPEN APP (iOS) ======
+        function tryOpenIOSApp() {
+            const status = document.getElementById('status');
+            status.innerHTML = 'Opening GroupKart app<span class="spinner"></span>';
+            
+            // iOS uses Universal Links - just redirect to the current URL
+            // The OS will handle opening the app if installed
+            const currentUrl = window.location.href;
+            
+            // Try to open app
+            window.location.href = currentUrl;
+            
+            // Fallback to App Store after timeout
+            setTimeout(() => {
+                status.innerHTML = 'Redirecting to App Store<span class="spinner"></span>';
+                window.location.href = CONFIG.appStoreUrl;
+            }, CONFIG.intentTimeout);
+        }
+
+        // ====== AUTO-REDIRECT LOGIC ======
+        function autoRedirect() {
+            // Only auto-redirect on mobile
+            if (!isMobile) {
+                console.log('💻 Desktop detected, showing download buttons');
+                return;
+            }
+            
+            // Show attempting status
+            const status = document.getElementById('status');
+            
+            // Wait a moment for page to fully load
+            setTimeout(() => {
+                if (isAndroid) {
+                    console.log('🤖 Android detected');
+                    tryOpenAndroidApp();
+                } else if (isIOS) {
+                    console.log('🍎 iOS detected');
+                    tryOpenIOSApp();
+                }
+            }, 500);
+        }
+
+        // ====== INITIALIZE ======
+        updateUI();
+        autoRedirect();
+
+        // ====== MANUAL BUTTON CLICKS ======
+        document.getElementById('androidBtn').addEventListener('click', (e) => {
+            if (isAndroid && (deepLinkData.referCode || deepLinkData.productId || deepLinkData.cartId)) {
+                e.preventDefault();
+                tryOpenAndroidApp();
+            }
+        });
+
+        document.getElementById('iosBtn').addEventListener('click', (e) => {
+            if (isIOS && (deepLinkData.referCode || deepLinkData.productId || deepLinkData.cartId)) {
+                e.preventDefault();
+                tryOpenIOSApp();
+            }
+        });
+    </script>
+</body>
+</html>

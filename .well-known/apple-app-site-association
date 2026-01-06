@@ -1,0 +1,15 @@
+{
+    "applinks": {
+      "apps": [],
+      "details": [{
+        "appID": "TEAM_ID.com.groupkart.store",
+        "paths": [
+          "/refer/*",
+          "/cart/*",
+          "/product/*",
+          "/app/*",
+          "*"
+        ]
+      }]
+    }
+  }

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join GroupKart - Referral Invitation</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🎁</div>
+        <h1>You're Invited!</h1>
+        <p>Your friend has invited you to join GroupKart</p>
+        
+        <div class="code-box">
+            <p>Your Referral Code:</p>
+            <h2 id="referCode">Loading...</h2>
+        </div>
+        
+        <div class="buttons">
+            <a href="https://play.google.com/store/apps/details?id=com.groupkart.store" class="btn btn-android">
+                Download for Android
+            </a>
+            <a href="https://apps.apple.com/app/groupkart/YOUR_IOS_APP_ID" class="btn btn-ios">
+                Download for iOS
+            </a>
+        </div>
+        
+        <p class="note">Your referral code will be automatically applied when you sign up!</p>
+    </div>
+
+    <script>
+        // Extract referral code from URL
+        const pathParts = window.location.pathname.split('/');
+        const urlParams = new URLSearchParams(window.location.search);
+        const referCode = urlParams.get('refer') || pathParts[pathParts.length - 1];
+        
+        // Display referral code
+        if (referCode) {
+            document.getElementById('referCode').textContent = referCode;
+            
+            // Store for deferred deep linking
+            localStorage.setItem('groupkart_refer_code', referCode);
+            localStorage.setItem('groupkart_deeplink', JSON.stringify({ referCode }));
+            localStorage.setItem('groupkart_deeplink_timestamp', Date.now().toString());
+        } else {
+            document.getElementById('referCode').textContent = 'Invalid Code';
+        }
+    </script>
+</body>
+</html>

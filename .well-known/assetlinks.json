@@ -1,0 +1,10 @@
+[{
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.groupkart.store",
+      "sha256_cert_fingerprints": [
+        "B7:5B:C4:7C:66:A7:B2:D1:88:D2:9E:13:4D:C0:3D:24:D9:6C:C0:29:39:BD:80:7A:7A:EA:5C:DD:FC:B0:96:FA"
+      ]
+    }
+  }]
