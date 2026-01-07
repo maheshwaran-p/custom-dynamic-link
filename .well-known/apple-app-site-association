@@ -1,15 +1,20 @@
 {
-    "applinks": {
-      "apps": [],
-      "details": [{
-        "appID": "TEAM_ID.com.groupkart.store",
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "B33YU3PU58.com.groupkart.store",
         "paths": [
-          "/refer/*",
           "/cart/*",
           "/product/*",
-          "/app/*",
-          "*"
+          "/refer/*"
         ]
-      }]
-    }
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "B33YU3PU58.com.groupkart.store"
+    ]
   }
+}
