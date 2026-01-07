@@ -9,16 +9,16 @@
     "cleanUrls": true,
     "rewrites": [
       {
-        "source": "/refer/**",
-        "function": "handleDeepLink"
-      },
-      {
         "source": "/cart/**",
-        "function": "handleDeepLink"
+        "destination": "/index.html"
       },
       {
         "source": "/product/**",
-        "function": "handleDeepLink"
+        "destination": "/index.html"
+      },
+      {
+        "source": "/refer/**",
+        "destination": "/index.html"
       },
       {
         "source": "**",
@@ -41,10 +41,6 @@
           {
             "key": "Content-Type",
             "value": "application/json"
-          },
-          {
-            "key": "Access-Control-Allow-Origin",
-            "value": "*"
           }
         ]
       },
@@ -54,10 +50,6 @@
           {
             "key": "Content-Type",
             "value": "application/json"
-          },
-          {
-            "key": "Access-Control-Allow-Origin",
-            "value": "*"
           }
         ]
       }
