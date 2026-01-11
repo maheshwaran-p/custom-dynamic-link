@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- ✅ iOS Smart App Banner (Optional - Shows "Open in App" banner at top) -->
-    <meta name="apple-itunes-app" content="app-id=6444329023">
-    
-    <title>GroupKart - Shop Together</title>
+    <title>GroupKart - Shop Together, Save More</title>
     <style>
         * {
             margin: 0;
@@ -17,7 +13,7 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #89fda4 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -27,137 +23,78 @@
         
         .container {
             background: white;
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 500px;
+            border-radius: 24px;
+            padding: 50px 40px;
+            max-width: 450px;
             width: 100%;
             text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 30px 90px rgba(0,0,0,0.4);
+            animation: slideUp 0.6s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .logo-container {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 25px;
+            animation: logoFloat 3s infinite ease-in-out;
+        }
+        
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
         
         .logo {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 20px;
-            background: #667eea;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
         }
         
         h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 28px;
+            color: #2d3748;
+            margin-bottom: 12px;
+            font-size: 32px;
+            font-weight: 700;
+        }
+        
+        .tagline {
+            color: #667eea;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
         }
         
         p {
-            color: #666;
+            color: #718096;
             margin-bottom: 20px;
             line-height: 1.6;
-        }
-        
-        .buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 30px;
-        }
-        
-        .btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 15px 30px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 16px;
-            transition: all 0.3s;
-            cursor: pointer;
-            border: none;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        .btn-android {
-            background: #3DDC84;
-            color: white;
-        }
-        
-        .btn-ios {
-            background: #000;
-            color: white;
-        }
-        
-        .info {
-            margin-top: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 12px;
-        }
-        
-        .info-item {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 10px 0;
-            color: #555;
-            font-size: 14px;
-        }
-        
-        #status {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            display: none;
-        }
-        
-        #status.show {
-            display: block;
-        }
-        
-        .status-info {
-            background: #d1ecf1;
-            color: #0c5460;
-        }
-        
-        .status-success {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .status-error {
-            background: #f8d7da;
-            color: #721c24;
+            font-size: 15px;
         }
         
         .loader {
             display: none;
-            margin: 20px auto;
-            width: 50px;
-            height: 50px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+            margin: 30px auto;
+            width: 60px;
+            height: 60px;
+            position: relative;
         }
         
-        .loader.show {
-            display: block;
+        .loader.show { display: block; }
+        
+        .loader-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 4px solid transparent;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
         
         @keyframes spin {
@@ -165,211 +102,265 @@
             100% { transform: rotate(360deg); }
         }
         
-        .debug {
-            margin-top: 20px;
-            padding: 15px;
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            border-radius: 8px;
-            font-size: 12px;
-            text-align: left;
-            max-height: 300px;
-            overflow-y: auto;
-            display: none; /* Hidden by default, enable for debugging */
+        .features {
+            margin-top: 35px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 16px;
+            display: grid;
+            gap: 15px;
         }
         
-        .debug.show {
-            display: block;
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #475569;
+            font-size: 14px;
+            font-weight: 500;
         }
         
-        .debug-item {
-            margin: 5px 0;
-            padding: 5px;
+        .feature-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        /* ====== INSTALL POPUP STYLES ====== */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .popup-overlay.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .popup-content {
             background: white;
-            border-radius: 4px;
-            word-wrap: break-word;
+            border-radius: 24px;
+            padding: 40px 30px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: popupSlideUp 0.4s ease-out;
+            position: relative;
+        }
+        
+        @keyframes popupSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .popup-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .popup-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 12px;
+        }
+        
+        .popup-subtitle {
+            font-size: 16px;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .popup-message {
+            font-size: 15px;
+            color: #718096;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .install-btn {
+            width: 100%;
+            padding: 18px 30px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .install-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .install-btn:active {
+            transform: translateY(0);
+        }
+        
+        .popup-features {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid #f1f5f9;
+            text-align: left;
+        }
+        
+        .popup-feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            color: #475569;
+            font-size: 14px;
+        }
+        
+        .popup-feature-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo">🛒</div>
-        <h1>Welcome to GroupKart!</h1>
-        <p id="mainText">Shop together effortlessly and get exclusive deals.</p>
-        
-        <div class="loader" id="loader"></div>
-        <div id="status"></div>
-        
-        <div class="buttons" id="manualButtons" style="display: none;">
-            <button id="androidBtn" class="btn btn-android">
-                📱 Open in App / Download for Android
-            </button>
-            <button id="iosBtn" class="btn btn-ios">
-                🍎 Open in App / Download for iOS
-            </button>
+        <div class="logo-container">
+            <img src="https://maheshwaran-p.github.io/whatsapp_promotional_images/logo.png" alt="GroupKart" class="logo">
         </div>
         
-        <div class="info">
-            <div class="info-item">✓ Fresh Indian sweets & snacks</div>
-            <div class="info-item">✓ Delivered in 5-7 working days</div>
-            <div class="info-item">✓ Shop together & save more</div>
+        <h1>GroupKart</h1>
+        <p class="tagline">Shop Together, Save More</p>
+        <p id="mainText">Get ready for an amazing shopping experience!</p>
+        
+        <div class="loader" id="loader">
+            <div class="loader-ring"></div>
+            <div class="loader-ring"></div>
         </div>
         
-        <div id="debug" class="debug">
-            <div style="font-weight: bold; margin-bottom: 10px;">🔍 Debug Information</div>
-            <div id="debugContent"></div>
+        <div class="features">
+            <div class="feature-item">
+                <div class="feature-icon">🍬</div>
+                <span>Fresh Indian sweets & snacks</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🚚</div>
+                <span>Delivered in 5-7 working days</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">💰</div>
+                <span>Exclusive group discounts</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== INSTALL APP POPUP (iOS Only) ====== -->
+    <div class="popup-overlay" id="installPopup">
+        <div class="popup-content">
+            <div class="popup-icon">🍎</div>
+            
+            <h2 class="popup-title">Get GroupKart App</h2>
+            <p class="popup-subtitle">Available on App Store</p>
+            
+            <p class="popup-message" id="popupMessage">
+                To enjoy the full shopping experience, download the GroupKart app from the App Store.
+            </p>
+            
+            <button class="install-btn" id="installBtn">
+                <span>🍎</span>
+                <span>Open App Store</span>
+            </button>
+            
+            <div class="popup-features">
+                <div class="popup-feature">
+                    <div class="popup-feature-icon">✓</div>
+                    <span>Fast & seamless shopping</span>
+                </div>
+                <div class="popup-feature">
+                    <div class="popup-feature-icon">✓</div>
+                    <span>Exclusive app-only deals</span>
+                </div>
+                <div class="popup-feature">
+                    <div class="popup-feature-icon">✓</div>
+                    <span>Real-time order tracking</span>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // ====== CONFIGURATION ======
-        const DEBUG = false; // Set to true to see debug logs
-        
         const CONFIG = {
-            androidPackage: 'com.groupkart.store',
-            iosAppId: '6444329023',
-            playStoreUrl: 'https://play.google.com/store/apps/details?id=com.groupkart.store',
+            playStoreIntent: 'intent://details?id=com.groupkart.store#Intent;scheme=market;package=com.android.vending;end',
             appStoreUrl: 'https://apps.apple.com/us/app/groupkart/id6444329023',
-            appOpenTimeout: 2500,
-            autoRetryDelay: 3000, // Auto-clear session after 3 seconds
+            androidTimeout: 2000, // Android: 2 seconds
+            iosTimeout: 5000,     // iOS: 4 seconds (then show button)
         };
 
-        let redirectAttempted = false;
-        let appOpened = false;
-        let redirectTimer = null;
-        
-        const STORAGE_KEYS = {
-            session: 'gk_session_v3',
-            deepLink: 'groupkart_pending_deeplink',
-            timestamp: 'gk_last_attempt',
-        };
-
-        // ====== DEBUG LOGGER ======
-        function debugLog(message, data = null) {
-            const timestamp = new Date().toLocaleTimeString();
-            console.log(`[${timestamp}] ${message}`, data || '');
-            
-            if (DEBUG) {
-                const debugDiv = document.getElementById('debug');
-                const debugContent = document.getElementById('debugContent');
-                debugDiv.classList.add('show');
-                
-                let dataStr = '';
-                if (data !== null && data !== undefined) {
-                    if (typeof data === 'object') {
-                        dataStr = '<br><pre style="margin:5px 0;font-size:11px;">' + JSON.stringify(data, null, 2) + '</pre>';
-                    } else {
-                        dataStr = ' → ' + data;
-                    }
-                }
-                
-                const logItem = document.createElement('div');
-                logItem.className = 'debug-item';
-                logItem.innerHTML = `<strong>[${timestamp}]</strong> ${message}${dataStr}`;
-                debugContent.appendChild(logItem);
-                debugContent.scrollTop = debugContent.scrollHeight;
-            }
-        }
-
-        function setStatus(message, type = 'info', show = true) {
-            const statusDiv = document.getElementById('status');
-            statusDiv.textContent = message;
-            statusDiv.className = `status-${type}`;
-            if (show) {
-                statusDiv.classList.add('show');
-            } else {
-                statusDiv.classList.remove('show');
-            }
-        }
-
-        function showLoader(show = true) {
-            const loader = document.getElementById('loader');
-            if (show) {
-                loader.classList.add('show');
-            } else {
-                loader.classList.remove('show');
-            }
-        }
-
-        function showManualButtons() {
-            document.getElementById('manualButtons').style.display = 'flex';
-            showLoader(false);
-        }
-
-        // ====== AUTO-CLEAR SESSION LOGIC ======
-        function shouldClearSession() {
-            const lastAttempt = sessionStorage.getItem(STORAGE_KEYS.timestamp);
-            if (!lastAttempt) return false;
-            
-            const now = Date.now();
-            const elapsed = now - parseInt(lastAttempt);
-            
-            // Auto-clear if more than 3 seconds since last attempt
-            if (elapsed > CONFIG.autoRetryDelay) {
-                debugLog('🔄 Auto-clearing old session', `${elapsed}ms elapsed`);
-                return true;
-            }
-            
-            return false;
-        }
-
-        function clearSession() {
-            sessionStorage.removeItem(STORAGE_KEYS.session);
-            sessionStorage.removeItem(STORAGE_KEYS.timestamp);
-            redirectAttempted = false;
-            debugLog('✅ Session cleared');
-        }
-
-        // Check and auto-clear if needed
-        if (shouldClearSession()) {
-            clearSession();
-        }
-
-        // Check if already attempted (within timeout window)
-        const sessionAttempted = sessionStorage.getItem(STORAGE_KEYS.session);
-        if (sessionAttempted === 'true') {
-            const lastAttempt = sessionStorage.getItem(STORAGE_KEYS.timestamp);
-            const elapsed = Date.now() - parseInt(lastAttempt || 0);
-            
-            if (elapsed < CONFIG.autoRetryDelay) {
-                debugLog('⚠️ Recent redirect detected, waiting for auto-clear');
-                redirectAttempted = true;
-                
-                // Auto-clear after delay
-                setTimeout(() => {
-                    debugLog('🔄 Auto-clearing session and reloading');
-                    clearSession();
-                    location.reload();
-                }, CONFIG.autoRetryDelay - elapsed);
-            } else {
-                clearSession();
-            }
-        }
-
-        // ====== PLATFORM DETECTION ======
-        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-        const isAndroid = /android/i.test(userAgent);
-        const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+        const isAndroid = /android/i.test(navigator.userAgent);
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         const isMobile = isAndroid || isIOS;
 
-        debugLog('🔍 Platform Detection', {
-            isAndroid,
-            isIOS,
-            isMobile,
-            userAgent: userAgent.substring(0, 100)
-        });
-
-        // ====== EXTRACT DEEP LINK DATA ======
         const urlParams = new URLSearchParams(window.location.search);
         const pathParts = window.location.pathname.split('/').filter(p => p);
         
         const deepLinkData = {
-            type: pathParts[0] || 'home',
             cartId: urlParams.get('cart_id'),
+            productId: urlParams.get('id'),
+            referCode: urlParams.get('refer') || urlParams.get('code') || (pathParts[0] === 'refer' ? pathParts[1] : null),
             invitedUserId: urlParams.get('invited_user_id'),
             ownerName: urlParams.get('Owner_name'),
-            productId: urlParams.get('id'),
-            referCode: urlParams.get('refer') || (pathParts[0] === 'refer' ? pathParts[1] : null),
             index: urlParams.get('index') || '0',
             secPos: urlParams.get('secPos') || '0',
             list: urlParams.get('list') || 'false',
@@ -377,49 +368,18 @@
 
         const hasDeepLink = !!(deepLinkData.cartId || deepLinkData.productId || deepLinkData.referCode);
 
-        debugLog('📋 Deep Link Data', { hasDeepLink, ...deepLinkData });
-
-        // ====== SAVE TO LOCALSTORAGE ======
-        function saveDeepLinkData() {
-            if (hasDeepLink) {
-                const dataToSave = {
-                    ...deepLinkData,
-                    timestamp: Date.now(),
-                    url: window.location.href,
-                };
-                
-                try {
-                    localStorage.setItem(STORAGE_KEYS.deepLink, JSON.stringify(dataToSave));
-                    debugLog('💾 Saved to localStorage');
-                    return true;
-                } catch (e) {
-                    debugLog('❌ LocalStorage error', e.message);
-                    return false;
-                }
-            }
-            return false;
-        }
-
-        saveDeepLinkData();
-
         // ====== UPDATE UI ======
-        function updateUI() {
-            const mainText = document.getElementById('mainText');
-            
-            if (deepLinkData.cartId) {
-                mainText.innerHTML = `<strong>${deepLinkData.ownerName || 'A friend'}</strong> invited you to join their shopping cart!`;
-                setStatus('📧 Cart invitation detected', 'success');
-            } else if (deepLinkData.productId) {
-                mainText.innerHTML = `Check out this awesome product!`;
-                setStatus('🎁 Product link detected', 'success');
-            } else if (deepLinkData.referCode) {
-                mainText.innerHTML = `You've been invited to join GroupKart!<br><br><strong>Referral Code: ${deepLinkData.referCode}</strong>`;
-                setStatus('🎉 Referral invitation detected', 'success');
-            }
+        const mainText = document.getElementById('mainText');
+        if (deepLinkData.cartId) {
+            mainText.innerHTML = `<strong>${deepLinkData.ownerName || 'A friend'}</strong> invited you to join their shopping cart! 🛒`;
+        } else if (deepLinkData.productId) {
+            mainText.innerHTML = `Check out this amazing product! 🎁`;
+        } else if (deepLinkData.referCode) {
+            mainText.innerHTML = `You've been invited to join GroupKart!<br><strong>Code: ${deepLinkData.referCode}</strong> 🎉`;
         }
 
-        // ====== BUILD CUSTOM SCHEME URI ======
-        function buildCustomSchemeUri() {
+        // ====== BUILD DEEP LINK ======
+        function buildDeepLink() {
             let path = '';
             const params = [];
             
@@ -439,148 +399,107 @@
                 params.push(`code=${deepLinkData.referCode}`);
             }
             
-            const queryString = params.length > 0 ? '?' + params.join('&') : '';
-            const uri = `groupkart://${path}${queryString}`;
-            
-            debugLog('🔗 Built URI', uri);
-            return uri;
+            return `groupkart://${path}${params.length ? '?' + params.join('&') : ''}`;
         }
 
-        // ====== DETECT IF APP OPENED ======
-        function setupAppOpenDetection() {
+        // ====== ANDROID: APP DETECTION ======
+        let appOpened = false;
+
+        if (isAndroid) {
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden) {
                     appOpened = true;
-                    debugLog('✅ App opened (visibility)');
-                    setStatus('✅ Opening GroupKart app...', 'success');
-                    clearTimeout(redirectTimer);
+                    console.log('✅ Android: App opened');
                 }
             });
-            
+
             window.addEventListener('blur', () => {
                 appOpened = true;
-                debugLog('✅ App opened (blur)');
-            });
-            
-            window.addEventListener('pagehide', () => {
-                appOpened = true;
-                debugLog('✅ App opened (pagehide)');
             });
         }
 
-        // ====== TRY TO OPEN APP (UNIFIED) ======
-        function tryOpenApp(platform) {
-            if (redirectAttempted) {
-                debugLog('⚠️ Redirect already attempted');
-                return;
+        // ====== SHOW INSTALL POPUP (iOS Only) ======
+        function showInstallPopup() {
+            const popup = document.getElementById('installPopup');
+            const popupMessage = document.getElementById('popupMessage');
+            const installBtn = document.getElementById('installBtn');
+
+            // Customize message based on content
+            if (deepLinkData.cartId) {
+                popupMessage.innerHTML = `<strong>${deepLinkData.ownerName || 'Your friend'}</strong> invited you to join their cart!<br><br>Download GroupKart app to accept the invitation.`;
+            } else if (deepLinkData.productId) {
+                popupMessage.textContent = 'View this product in the GroupKart app for the best shopping experience.';
+            } else if (deepLinkData.referCode) {
+                popupMessage.innerHTML = `Use referral code <strong>${deepLinkData.referCode}</strong> to get exclusive rewards!<br><br>Download the app to get started.`;
             }
+
+            installBtn.onclick = () => {
+                console.log('🍎 Opening App Store');
+                window.location.href = CONFIG.appStoreUrl;
+            };
+
+            popup.className = 'popup-overlay show';
+            document.getElementById('loader').className = 'loader';
+        }
+
+        // ====== ANDROID: TRY TO OPEN APP ======
+        function tryOpenAndroidApp() {
+            if (!hasDeepLink) return;
+
+            document.getElementById('loader').className = 'loader show';
+            const deepLink = buildDeepLink();
             
-            redirectAttempted = true;
-            sessionStorage.setItem(STORAGE_KEYS.session, 'true');
-            sessionStorage.setItem(STORAGE_KEYS.timestamp, Date.now().toString());
-            
-            appOpened = false;
-            showLoader(true);
-            setStatus('🔄 Opening app...', 'info');
-            
-            const customScheme = buildCustomSchemeUri();
-            const storeUrl = platform === 'ios' ? CONFIG.appStoreUrl : CONFIG.playStoreUrl;
-            
-            debugLog(`🚀 ${platform}: Attempting to open app`);
-            
+            console.log('🤖 Android: Trying to open app');
+            console.log('Deep link:', deepLink);
+
             // Try to open app
-            window.location.href = customScheme;
-            
-            // Wait and check if app opened
-            redirectTimer = setTimeout(() => {
-                debugLog(`⏱️ ${platform}: Timeout reached`);
-                debugLog(`📊 App opened: ${appOpened}`);
-                debugLog(`📊 Document hidden: ${document.hidden}`);
+            window.location.href = deepLink;
+
+            // Check if app opened
+            setTimeout(() => {
+                console.log('Android check - appOpened:', appOpened, 'hidden:', document.hidden);
                 
-                if (appOpened || document.hidden) {
-                    debugLog(`✅ ${platform}: App opened successfully`);
-                    setStatus('✅ App opened!', 'success');
+                if (!document.hidden && !appOpened) {
+                    console.log('❌ App not installed - Opening Play Store');
+                    window.location.href = CONFIG.playStoreIntent;
                 } else {
-                    debugLog(`❌ ${platform}: App not installed, opening store`);
-                    setStatus('📲 Redirecting to store...', 'info');
-                    
-                    // Redirect to store after brief delay
-                    setTimeout(() => {
-                        window.location.href = storeUrl;
-                    }, 500);
+                    console.log('✅ App opened successfully!');
                 }
-            }, CONFIG.appOpenTimeout);
+            }, CONFIG.androidTimeout);
         }
 
-        // ====== BUTTON HANDLERS ======
-        document.getElementById('androidBtn').addEventListener('click', (e) => {
-            e.preventDefault();
-            debugLog('🖱️ Android button clicked');
-            
-            if (isAndroid) {
-                tryOpenApp('android');
-            } else {
-                window.open(CONFIG.playStoreUrl, '_blank');
-            }
-        });
+        // ====== iOS: TRY TO OPEN APP + SHOW BUTTON ======
+        function tryOpenIOSApp() {
+            if (!hasDeepLink) return;
 
-        document.getElementById('iosBtn').addEventListener('click', (e) => {
-            e.preventDefault();
-            debugLog('🖱️ iOS button clicked');
+            document.getElementById('loader').className = 'loader show';
+            const deepLink = buildDeepLink();
             
-            if (isIOS) {
-                tryOpenApp('ios');
-            } else {
-                window.open(CONFIG.appStoreUrl, '_blank');
-            }
-        });
+            console.log('🍎 iOS: Trying to open app');
+            console.log('Deep link:', deepLink);
 
-        // ====== AUTO-OPEN ON MOBILE ======
-        function autoOpen() {
-            if (redirectAttempted) {
-                debugLog('⏭️ Auto-open skipped: Already attempted');
-                showManualButtons();
-                return;
-            }
+            // ✅ Try to open app (works if app is installed)
+            window.location.href = deepLink;
+
+            // ✅ After 4 seconds: Stop loader, show install button
+            setTimeout(() => {
+                console.log('🍎 iOS: Showing App Store button');
+                showInstallPopup();
+            }, CONFIG.iosTimeout);
+        }
+
+        // ====== AUTO-START ======
+        if (hasDeepLink && isMobile) {
+            console.log('🎯 Platform:', isIOS ? 'iOS' : 'Android');
             
-            if (!isMobile) {
-                debugLog('⏭️ Auto-open skipped: Desktop');
-                showManualButtons();
-                return;
-            }
-            
-            if (!hasDeepLink) {
-                debugLog('⏭️ Auto-open skipped: No deep link');
-                showManualButtons();
-                return;
-            }
-            
-            debugLog('✅ Auto-opening app');
-            setStatus('⏳ Opening app automatically...', 'info');
-            showLoader(true);
-            
-            // Small delay to ensure page is ready
             setTimeout(() => {
                 if (isAndroid) {
-                    tryOpenApp('android');
+                    tryOpenAndroidApp();
                 } else if (isIOS) {
-                    tryOpenApp('ios');
+                    tryOpenIOSApp();
                 }
-            }, 500); // Reduced delay for smoother UX
+            }, 200);
         }
-
-        // ====== INITIALIZE ======
-        setupAppOpenDetection();
-        updateUI();
-        
-        debugLog('🎯 Initialized', {
-            hasDeepLink,
-            willAutoOpen: isMobile && !redirectAttempted && hasDeepLink,
-            redirectAttempted
-        });
-        
-        // Start auto-open
-        autoOpen();
     </script>
 </body>
 </html>
