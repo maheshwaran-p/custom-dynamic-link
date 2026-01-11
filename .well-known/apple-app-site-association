@@ -3,11 +3,44 @@
     "apps": [],
     "details": [
       {
-        "appID": "B33YU3PU58.com.groupkart.store",
-        "paths": [
-          "/cart/*",
-          "/product/*",
-          "/refer/*"
+        "appIDs": [
+          "B33YU3PU58.com.groupkart.store"
+        ],
+        "components": [
+          {
+            "/": "/cart/*",
+            "comment": "Matches any URL with path starting with /cart/"
+          },
+          {
+            "/": "/cart",
+            "?": {
+              "cart_id": "*",
+              "invited_user_id": "*"
+            },
+            "comment": "Matches /cart with query parameters"
+          },
+          {
+            "/": "/product/*",
+            "comment": "Matches any URL with path starting with /product/"
+          },
+          {
+            "/": "/product",
+            "?": {
+              "id": "*"
+            },
+            "comment": "Matches /product with query parameters"
+          },
+          {
+            "/": "/refer/*",
+            "comment": "Matches any URL with path starting with /refer/"
+          },
+          {
+            "/": "/refer",
+            "?": {
+              "code": "*"
+            },
+            "comment": "Matches /refer with query parameters"
+          }
         ]
       }
     ]

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- test 1 -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GroupKart - Shop Together</title>
@@ -91,6 +92,13 @@
             color: white;
         }
         
+        .btn-clear {
+            background: #ff4444;
+            color: white;
+            font-size: 12px;
+            padding: 8px 16px;
+        }
+        
         .info {
             margin-top: 30px;
             padding: 20px;
@@ -125,6 +133,11 @@
             color: #155724;
         }
         
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
         .debug {
             margin-top: 20px;
             padding: 15px;
@@ -133,13 +146,9 @@
             border-radius: 8px;
             font-size: 12px;
             text-align: left;
-            max-height: 300px;
+            max-height: 400px;
             overflow-y: auto;
-            display: none;
-        }
-        
-        .debug.show {
-            display: block;
+            display: block; /* Always show in debug mode */
         }
         
         .debug-item {
@@ -147,22 +156,7 @@
             padding: 5px;
             background: white;
             border-radius: 4px;
-        }
-        
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-left: 10px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            word-wrap: break-word;
         }
     </style>
 </head>
@@ -181,6 +175,9 @@
             <button id="iosBtn" class="btn btn-ios">
                 🍎 Open in App / Download for iOS
             </button>
+            <button id="clearBtn" class="btn btn-clear" style="display: none;">
+                🔄 Clear Session & Retry
+            </button>
         </div>
         
         <div class="info">
@@ -197,35 +194,41 @@
 
     <script>
         // ====== CONFIGURATION ======
-        const DEBUG = true; // Set to false in production
+        const DEBUG = true; // Always debug mode
         
         const CONFIG = {
             androidPackage: 'com.groupkart.store',
             iosAppId: '6444329023',
             playStoreUrl: 'https://play.google.com/store/apps/details?id=com.groupkart.store',
             appStoreUrl: 'https://apps.apple.com/us/app/groupkart/id6444329023',
-            appOpenTimeout: 2500, // Time to wait for app to open
+            appOpenTimeout: 2500,
         };
 
         let redirectAttempted = false;
         let appOpened = false;
+        const sessionKey = 'groupkart_redirect_attempted_v2'; // New version key
 
         // ====== DEBUG LOGGER ======
         function debugLog(message, data = null) {
             const timestamp = new Date().toLocaleTimeString();
             console.log(`[${timestamp}] ${message}`, data || '');
             
-            if (DEBUG) {
-                const debugDiv = document.getElementById('debug');
-                const debugContent = document.getElementById('debugContent');
-                debugDiv.classList.add('show');
-                
-                const logItem = document.createElement('div');
-                logItem.className = 'debug-item';
-                logItem.innerHTML = `<strong>[${timestamp}]</strong> ${message}${data ? '<br><pre>' + JSON.stringify(data, null, 2) + '</pre>' : ''}`;
-                debugContent.appendChild(logItem);
-                debugContent.scrollTop = debugContent.scrollHeight;
+            const debugContent = document.getElementById('debugContent');
+            const logItem = document.createElement('div');
+            logItem.className = 'debug-item';
+            
+            let dataStr = '';
+            if (data !== null && data !== undefined) {
+                if (typeof data === 'object') {
+                    dataStr = '<br><pre style="margin:5px 0;font-size:11px;">' + JSON.stringify(data, null, 2) + '</pre>';
+                } else {
+                    dataStr = ' → ' + data;
+                }
             }
+            
+            logItem.innerHTML = `<strong>[${timestamp}]</strong> ${message}${dataStr}`;
+            debugContent.appendChild(logItem);
+            debugContent.scrollTop = debugContent.scrollHeight;
         }
 
         function setStatus(message, type = 'info') {
@@ -234,17 +237,35 @@
             statusDiv.className = `status-${type}`;
         }
 
+        // ====== CHECK SESSION STORAGE ======
+        const hasAttempted = sessionStorage.getItem(sessionKey);
+        if (hasAttempted === 'true') {
+            debugLog('⚠️ Previous redirect detected in session');
+            redirectAttempted = true;
+            document.getElementById('clearBtn').style.display = 'block';
+            setStatus('⚠️ Previous redirect detected. Click "Clear Session" to retry', 'error');
+        }
+
+        // ====== CLEAR SESSION BUTTON ======
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            sessionStorage.clear();
+            debugLog('🔄 Session cleared, reloading page...');
+            location.reload();
+        });
+
         // ====== PLATFORM DETECTION ======
         const userAgent = navigator.userAgent || navigator.vendor || window.opera;
         const isAndroid = /android/i.test(userAgent);
         const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
         const isMobile = isAndroid || isIOS;
 
-        debugLog('Platform detected', {
-            userAgent: userAgent.substring(0, 100),
+        debugLog('🔍 Platform Detection', {
+            userAgent: userAgent.substring(0, 150),
             isAndroid: isAndroid,
             isIOS: isIOS,
-            isMobile: isMobile
+            isMobile: isMobile,
+            windowWidth: window.innerWidth,
+            touchSupport: 'ontouchstart' in window
         });
 
         // ====== EXTRACT DEEP LINK DATA ======
@@ -263,7 +284,8 @@
             list: urlParams.get('list') || 'false',
         };
 
-        debugLog('Deep link data extracted', deepLinkData);
+        debugLog('📋 Deep Link Data', deepLinkData);
+        debugLog('🌐 Full URL', window.location.href);
 
         // ====== SAVE TO LOCALSTORAGE ======
         function saveDeepLinkData() {
@@ -276,17 +298,18 @@
                 
                 try {
                     localStorage.setItem('groupkart_pending_deeplink', JSON.stringify(dataToSave));
-                    debugLog('Data saved to localStorage', dataToSave);
+                    debugLog('💾 Saved to localStorage', dataToSave);
                     return true;
                 } catch (e) {
-                    debugLog('Error saving data', e.message);
+                    debugLog('❌ LocalStorage error', e.message);
                     return false;
                 }
             }
+            debugLog('⏭️ No deep link data to save');
             return false;
         }
 
-        saveDeepLinkData();
+        const dataSaved = saveDeepLinkData();
 
         // ====== UPDATE UI ======
         function updateUI() {
@@ -326,51 +349,49 @@
             }
             
             const queryString = params.length > 0 ? '?' + params.join('&') : '';
-            return `groupkart://${path}${queryString}`;
+            const fullUri = `groupkart://${path}${queryString}`;
+            
+            debugLog('🔗 Built custom scheme URI', fullUri);
+            return fullUri;
         }
 
         // ====== DETECT IF APP OPENED ======
         function setupAppOpenDetection() {
-            // Method 1: Visibility change
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden) {
                     appOpened = true;
-                    debugLog('✅ App opened (visibility changed)');
+                    debugLog('✅ App opened (visibilitychange → hidden)');
                     setStatus('✅ Opening GroupKart app...', 'success');
                 }
             });
             
-            // Method 2: Page blur
             window.addEventListener('blur', () => {
                 appOpened = true;
                 debugLog('✅ App opened (window blur)');
             });
             
-            // Method 3: Page focus (when returning)
-            window.addEventListener('focus', () => {
-                if (appOpened) {
-                    debugLog('ℹ️ User returned to browser');
-                }
+            window.addEventListener('pagehide', () => {
+                appOpened = true;
+                debugLog('✅ App opened (pagehide)');
             });
         }
 
         // ====== TRY TO OPEN APP (ANDROID) ======
         function tryOpenAndroidApp() {
             if (redirectAttempted) {
-                debugLog('⚠️ Redirect already attempted');
+                debugLog('⚠️ Android: Redirect already attempted');
                 return;
             }
             
             redirectAttempted = true;
+            sessionStorage.setItem(sessionKey, 'true');
             appOpened = false;
             
-            debugLog('🚀 Android: Starting app open attempt');
+            debugLog('🤖 Android: Starting app open attempt');
             setStatus('🔄 Attempting to open app...', 'info');
             
             const customScheme = buildCustomSchemeUri();
             const startTime = Date.now();
-            
-            debugLog('📱 Trying custom scheme', customScheme);
             
             // Try to open app
             window.location.href = customScheme;
@@ -378,21 +399,18 @@
             // Wait and check if app opened
             setTimeout(() => {
                 const elapsed = Date.now() - startTime;
-                
-                debugLog('⏱️ Time elapsed', `${elapsed}ms`);
-                debugLog('📊 App opened status', appOpened);
-                debugLog('📊 Document hidden', document.hidden);
+                debugLog('⏱️ Android: Wait complete', `${elapsed}ms`);
+                debugLog('📊 Android: App opened?', appOpened);
+                debugLog('📊 Android: Document hidden?', document.hidden);
                 
                 if (appOpened || document.hidden) {
-                    debugLog('✅ App opened successfully!');
+                    debugLog('✅ Android: App opened!');
                     setStatus('✅ Opening GroupKart app...', 'success');
                 } else {
-                    debugLog('❌ App not installed, redirecting to Play Store');
+                    debugLog('❌ Android: App not opened, redirecting to Play Store');
                     setStatus('📲 Redirecting to Play Store...', 'info');
                     
-                    // Small delay to ensure smooth transition
                     setTimeout(() => {
-                        debugLog('🏪 Opening Play Store', CONFIG.playStoreUrl);
                         window.location.href = CONFIG.playStoreUrl;
                     }, 500);
                 }
@@ -402,34 +420,41 @@
         // ====== TRY TO OPEN APP (iOS) ======
         function tryOpenIOSApp() {
             if (redirectAttempted) {
-                debugLog('⚠️ Redirect already attempted');
+                debugLog('⚠️ iOS: Redirect already attempted');
                 return;
             }
             
             redirectAttempted = true;
+            sessionStorage.setItem(sessionKey, 'true');
             appOpened = false;
             
             debugLog('🍎 iOS: Starting app open attempt');
             setStatus('🔄 Attempting to open app...', 'info');
             
-            const universalLink = window.location.href;
-            debugLog('📱 Trying Universal Link', universalLink);
+            const customScheme = buildCustomSchemeUri();
             
-            // Try Universal Link
-            window.location.href = universalLink;
+            // ✅ iOS: Use direct window.location (same as Android for consistency)
+            debugLog('🍎 iOS: Trying direct window.location.href');
+            window.location.href = customScheme;
             
-            // Fallback to App Store
+            // Check if app opened
             setTimeout(() => {
-                if (!appOpened && !document.hidden) {
-                    debugLog('❌ App not installed, redirecting to App Store');
+                debugLog('⏱️ iOS: Wait complete', `${CONFIG.appOpenTimeout}ms`);
+                debugLog('📊 iOS: App opened?', appOpened);
+                debugLog('📊 iOS: Document hidden?', document.hidden);
+                debugLog('📊 iOS: Document visibility', document.visibilityState);
+                
+                if (appOpened || document.hidden) {
+                    debugLog('✅ iOS: App opened successfully!');
+                    setStatus('✅ Opening GroupKart app...', 'success');
+                } else {
+                    debugLog('❌ iOS: App not opened, redirecting to App Store');
                     setStatus('📲 Redirecting to App Store...', 'info');
                     
                     setTimeout(() => {
-                        debugLog('🏪 Opening App Store', CONFIG.appStoreUrl);
+                        debugLog('🏪 iOS: Opening App Store', CONFIG.appStoreUrl);
                         window.location.href = CONFIG.appStoreUrl;
                     }, 500);
-                } else {
-                    debugLog('✅ App opened successfully!');
                 }
             }, CONFIG.appOpenTimeout);
         }
@@ -442,7 +467,7 @@
             if (isAndroid) {
                 tryOpenAndroidApp();
             } else {
-                debugLog('💻 Desktop: Opening Play Store in new tab');
+                debugLog('💻 Desktop: Opening Play Store');
                 window.open(CONFIG.playStoreUrl, '_blank');
             }
         });
@@ -454,31 +479,53 @@
             if (isIOS) {
                 tryOpenIOSApp();
             } else {
-                debugLog('💻 Desktop: Opening App Store in new tab');
+                debugLog('💻 Desktop: Opening App Store');
                 window.open(CONFIG.appStoreUrl, '_blank');
             }
         });
 
         // ====== AUTO-OPEN ON MOBILE ======
         function autoOpen() {
-            // Only auto-open if there's deep link data
-            if (!isMobile || (!deepLinkData.cartId && !deepLinkData.productId && !deepLinkData.referCode)) {
-                debugLog('ℹ️ Auto-open skipped', {
-                    isMobile: isMobile,
-                    hasDeepLink: !!(deepLinkData.cartId || deepLinkData.productId || deepLinkData.referCode)
-                });
+            const hasDeepLink = !!(deepLinkData.cartId || deepLinkData.productId || deepLinkData.referCode);
+            
+            debugLog('🤔 Checking auto-open conditions', {
+                isMobile: isMobile,
+                isAndroid: isAndroid,
+                isIOS: isIOS,
+                redirectAttempted: redirectAttempted,
+                hasDeepLink: hasDeepLink,
+                sessionKey: sessionStorage.getItem(sessionKey)
+            });
+            
+            // Skip if already attempted
+            if (redirectAttempted) {
+                debugLog('⏭️ Auto-open SKIPPED: Already attempted');
+                setStatus('⚠️ Auto-open blocked. Clear session to retry.', 'error');
+                document.getElementById('clearBtn').style.display = 'block';
                 return;
             }
             
-            debugLog('🤖 Auto-opening app in 1 second...');
+            // Skip if not mobile or no deep link
+            if (!isMobile) {
+                debugLog('⏭️ Auto-open SKIPPED: Not mobile device');
+                return;
+            }
+            
+            if (!hasDeepLink) {
+                debugLog('⏭️ Auto-open SKIPPED: No deep link data');
+                return;
+            }
+            
+            debugLog('✅ Auto-open CONDITIONS MET');
+            debugLog('🚀 Auto-opening app in 1 second...');
             setStatus('⏳ Auto-opening app...', 'info');
             
             setTimeout(() => {
                 if (isAndroid) {
-                    debugLog('🤖 Auto-clicking Android button');
+                    debugLog('🤖 Auto-opening: Android');
                     tryOpenAndroidApp();
                 } else if (isIOS) {
-                    debugLog('🤖 Auto-clicking iOS button');
+                    debugLog('🍎 Auto-opening: iOS');
                     tryOpenIOSApp();
                 }
             }, 1000);
@@ -487,12 +534,18 @@
         // ====== INITIALIZE ======
         setupAppOpenDetection();
         updateUI();
-        autoOpen();
         
-        debugLog('🎯 Page initialized', {
-            dataSaved: !!localStorage.getItem('groupkart_pending_deeplink'),
-            willAutoOpen: isMobile && !!(deepLinkData.cartId || deepLinkData.productId || deepLinkData.referCode)
+        const willAutoOpen = isMobile && !redirectAttempted && !!(deepLinkData.cartId || deepLinkData.productId || deepLinkData.referCode);
+        
+        debugLog('🎯 Page Initialized', {
+            dataSaved: dataSaved,
+            redirectAttempted: redirectAttempted,
+            willAutoOpen: willAutoOpen,
+            sessionStorageValue: sessionStorage.getItem(sessionKey)
         });
+        
+        // Start auto-open
+        autoOpen();
     </script>
 </body>
 </html>

@@ -38,6 +38,23 @@
           }
         ]
       }
+    ],
+    "redirects": [
+      {
+        "source": "/cart",
+        "destination": "/index.html",
+        "type": 301
+      },
+      {
+        "source": "/product",
+        "destination": "/index.html",
+        "type": 301
+      },
+      {
+        "source": "/refer",
+        "destination": "/index.html",
+        "type": 301
+      }
     ]
   }
 }
